@@ -209,8 +209,8 @@ return [
         /*
          * Auth Token
          */
-        'JWTAuth'   => TymonJWTAuthFacadesJWTAuth::class,
-        'JWTFactory' => TymonJWTAuthFacadesJWTFactory::class
+        'JWTAuth'   => \Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => \Tymon\JWTAuth\Facades\JWTFactory::class
 
     ],
 

@@ -11,14 +11,20 @@
 |
 */
 
+App::bind('App\Repositories\Interfaces\UserRepositoryInterface', 'App\Repositories\UserRepository');
+App::bind('App\Repositories\Interfaces\MealsRepositoryInterface', 'App\Repositories\MealsRepository');
+
 Route::get('/', function () {
     return view('app');
 });
 
 Route::group(array('prefix' => 'api'), function () {
 
-    Route::post('register', 'TokenAuthController@register');
-    Route::post('authenticate', 'TokenAuthController@authenticate');
-    Route::get('authenticate/user', 'TokenAuthController@getAuthenticatedUser');
-    
+    Route::group(array('prefix' => 'auth'), function () {
+        Route::post('register', 'TokenAuthController@register');
+        Route::post('authenticate', 'TokenAuthController@authenticate');
+        Route::get('authenticate/user','TokenAuthController@getAuthenticatedUser');
+    });
+
+    Route::resource('meals', 'MealsController');
 });

@@ -6,22 +6,18 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class TokenAuthControllerTest extends TestCase
 {
-    /**
-     * Testing the authentication method 
-     *
-     * @return void
-     */
-    public function testAuthenticate()
-    {
-        //$response = $this->call('GET', '/');
-        //$this->assertEquals(200, $response->status());
 
-        //$this->post('/user', ['name' => 'Sally'])
-        //    ->seeJson([
-        //        'created' => true,
-        //    ]);
+    public function __construct()
+    {
+        // Nós não temos qualquer interesse em testar o Eloquent
+        //$this->mock = Mockery::mock('Eloquent', 'User');
     }
-    
+
+    public function tearDown()
+    {
+        //Mockery::close();
+    }
+
     /**
      * Testing the register method
      *
@@ -31,7 +27,7 @@ class TokenAuthControllerTest extends TestCase
     {
 
         //checking if the validators are working
-        $this->post('/api/register', ['name' => 'Sally'])
+        $response = $this->post('/api/auth/register', ['name' => 'Sally'])
             ->seeJson([
                 'message' => 'Validation Failed',
             ]);
@@ -40,13 +36,59 @@ class TokenAuthControllerTest extends TestCase
         $newuser = [
             'name' => 'test',
             'email' => 'test@test.com',
-            'password' => 'te$te',
+            'password' => 'te$te1',
         ];
-        
-        $this->post('/api/register', $newuser)
+
+        $this->post('/api/auth/register', $newuser)
             ->seeJson([
                 'message' => 'Validation Failed',
             ]);
 
+
+        $json = json_decode($this->post('/api/auth/authenticate', $newuser)->response->getContent());
+        if( property_exists($json, 'message') && $json->message == 'Invalid Credentials' )
+        {
+            //registeting the user
+            $newuser['password_confirmation'] = 'te$te1';
+            $this->post('/api/auth/register', $newuser)
+                ->seeJson([
+                    "email" => "test@test.com",
+                ]);
+        }
+
+
     }
+
+    /**
+     * Testing the authentication method
+     *
+     * @return void
+     */
+    public function testAuthenticate()
+    {
+
+        $loginuser = ['email' => 'test@test.com'];
+        $this->post('/api/auth/authenticate', $loginuser)
+            ->seeJson([
+                'message' => 'Invalid Credentials',
+            ]);
+
+        $this->get('/api/auth/authenticate/user')
+            ->seeJson([
+                "message" => "Token absent",
+        ]);
+
+        $loginuser['password'] = 'te$te1';
+        $this->post('/api/auth/authenticate', $loginuser)->seeIsAuthenticated();
+
+
+        $this->token = json_decode($this->post('/api/auth/authenticate', $loginuser)->response->getContent());
+        $this->refreshApplication();
+        $this->get('/api/auth/authenticate/user', ['Authorization' => 'Bearer ' . (string)$this->token->token])
+        ->seeJson([
+            "name" => "test"
+        ]);
+    }
+
+
 }
