@@ -1,45 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>Laravel</title>
+<head>
+    <meta charset="utf-8">
+    <title>My meals application</title>
+    <link rel="stylesheet" href="{{ URL::asset('node_modules/bootstrap/dist/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('css/style.css') }}">
+</head>
+<body ng-app="app.meals">
 
-        <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
+<nav class="navbar navbar-default navbar-static-top" ng-if="currentUser.name">
+    <div class="container">
+        <div class="navbar-header">
 
-        <style>
-            html, body {
-                height: 100%;
-            }
-
-            body {
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                display: table;
-                font-weight: 100;
-                font-family: 'Lato';
-            }
-
-            .container {
-                text-align: center;
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .content {
-                text-align: center;
-                display: inline-block;
-            }
-
-            .title {
-                font-size: 96px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="content">
-                <div class="title">Laravel 5</div>
-            </div>
+            <!-- Branding Image -->
+            <a class="navbar-brand" href="#">
+                Meals of @{{currentUser.name}}
+            </a>
         </div>
-    </body>
-</html>
+
+        <div class="collapse navbar-collapse" id="app-navbar-collapse">
+
+            <!-- Right Side Of Navbar -->
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#" ng-click="logout()"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div ui-view></div>
+
+</body>
+
+<script src="{{ URL::asset('node_modules/angular/angular.js') }}"></script>
+<script src="{{ URL::asset('node_modules/angular-ui-router/release/angular-ui-router.js') }}"></script>
+<script src="{{ URL::asset('node_modules/satellizer/satellizer.js') }}"></script>
+<script src="{{ URL::asset('js/showErrors/showErrors.js') }}"></script>
+
+<script src="{{ URL::asset('js/app.js') }}"></script>
+<script src="{{ URL::asset('js/authController.js') }}"></script>
+<script src="{{ URL::asset('js/mealsController.js') }}"></script><!DOCTYPE html>
+

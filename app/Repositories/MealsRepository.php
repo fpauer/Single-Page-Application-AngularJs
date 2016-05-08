@@ -62,7 +62,7 @@ class MealsRepository implements MealsRepositoryInterface
      */
     public function getMealById($user_id, $id)
     {
-        return Meal::where('user_id','=',$user_id)->where('id','=',$id)->get()->first();
+        return Meals::where('user_id','=',$user_id)->where('id','=',$id)->get()->first();
     }
 
     /**

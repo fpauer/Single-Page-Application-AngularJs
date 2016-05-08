@@ -41,15 +41,36 @@ class MealsControllerTest extends TestCase
     public function testStore()
     {
         if( !empty($this->header)) {
-            $meals = [
-                'description' => 'Nice slice of bread',
-                'calories' => 123
-                , 'eat_at' => Carbon\Carbon::now()];
 
-            $this->post('/api/meals', $meals, $this->header)
-                ->seeJson([
-                    'user_id' => 1
-                ]);
+            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
+            if( sizeof($meal) == 0 )
+            {
+                $meals = [
+                    'description' => 'Nice slice of bread',
+                    'calories' => 123
+                    , 'eat_at' => Carbon\Carbon::now()];
+
+                $this->post('/api/meals', $meals, $this->header)
+                    ->seeJson([
+                        'user_id' => 1
+                    ]);
+
+
+                $meal = json_decode($this->get('/api/meals/2', $this->header)->response->getContent(), true);
+                if( sizeof($meal) == 0 )
+                {
+                    $this->refreshApplication();
+                    $meals = [
+                        'description' => 'Nice slice of bread 2',
+                        'calories' => 1234
+                        , 'eat_at' => Carbon\Carbon::now()];
+
+                    $this->post('/api/meals', $meals, $this->header)
+                        ->seeJson([
+                            'user_id' => 1
+                        ]);
+                }
+            }
         }
     }
 
@@ -62,12 +83,13 @@ class MealsControllerTest extends TestCase
     {
         if( !empty($this->header)) {
 
-            //$meals = $this->get('/api/meals', $this->header);
+            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
+            $meal['description'] = 'Updated Nice slice of bread 1';
+            $meal['calories'] = 1234;
+            $meal['eat_at'] = Carbon\Carbon::now();
 
-            //$this->post('/api/meals', $meals, $this->header)
-             //   ->seeJson([
-             //       'user_id' => 1
-             //   ]);
+            $this->refreshApplication();
+            $this->put('/api/meals/'.$meal['id'], $meal, $this->header)->assertResponseOk();
         }
     }
 
@@ -78,6 +100,13 @@ class MealsControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $this->assertTrue(true);
+        if( !empty($this->header)) {
+            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
+
+            if( sizeof($meal) > 0 )
+            {
+                $this->delete('/api/meals/'.$meal['id'], [], $this->header)->assertResponseOk();
+            }
+        }
     }
 }

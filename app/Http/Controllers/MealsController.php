@@ -28,6 +28,18 @@ class MealsController extends Controller
         $list = $this->meals->getListMealsByUserId($user);
         return $list;
     }
+
+    /**
+     * Return a meal from id
+     *
+     * @return mixed
+     */
+    public function show($id)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $meal = $this->meals->getMealById($user->id, $id);
+        return $meal;
+    }
     
     /**
      * Store a new meal for the authenticated User
@@ -50,12 +62,21 @@ class MealsController extends Controller
     public function update(Request $request, $id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $id);
+        $mealFound = $this->meals->getMealById($user->id, $id);
         
-        if($this->meals->save($meal)){
-            return $meal;
+        if($mealFound)
+        {
+            $meal = $request->all();
+            if( $this->meals->save($meal) )
+            {
+                return  response('Success',200);
+            }
+            else
+            {
+                return response('Not saved',500);
+            }
         }else{
-            return response('Unauthoraized',403);
+            return response('Unauthoraized',401);
         }
     }
 
@@ -73,7 +94,7 @@ class MealsController extends Controller
             $this->meals->delete($meal);
             return  response('Success',200);
         }else{
-            return response('Unauthoraized',403);
+            return response('Unauthoraized',401);
         }
     }
 }
