@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="col-lg-12"><br></div>
+</div>
+<div class="col-sm-4 col-sm-offset-4">
+    <div class="alert alert-danger" ng-if="registerError" role="alert">
+        <div ng-repeat="error in registerErrors">
+            {{error}}
+        </div>
+    </div>
+    <div class="well">
+        <h3>Register</h3>
+        <form name="loginForm"  novalidate>
+            <div class="form-group" show-errors>
+                <input type="text" name="name" class="form-control" placeholder="Name" ng-model="newUser.name" required >
+                <p class="help-block" ng-if="loginForm.name.$error.required">Name is required</p>
+            </div>
+            <div class="form-group" show-errors>
+                <input type="email" name="email" class="form-control" placeholder="Email" ng-model="newUser.email" required >
+                <p class="help-block" ng-if="loginForm.email.$error.required">Email is required</p>
+                <p class="help-block" ng-if="loginForm.email.$error.email">Email address is invalid</p>
+            </div>
+
+            <div class="form-group" show-errors>
+                <input type="password" name="password" class="form-control" placeholder="Password" ng-model="newUser.password" required >
+                <p class="help-block" ng-if="loginForm.password.$error.required">Password is required</p>
+            </div>
+            <div class="form-group" show-errors>
+                <input type="password" name="password_confirmation" class="form-control" placeholder="Password Confirmation" ng-model="newUser.password_confirmation" required >
+                <p class="help-block" ng-if="loginForm.password_confirmation.$error.required">Password Confirmation is required</p>
+            </div>
+            <button class="btn btn-primary" ng-click="register()">Register</button>
+            <a class="btn btn-danger pull-right" ui-sref="login">Back</a>
+        </form>
+    </div>
+</div>
