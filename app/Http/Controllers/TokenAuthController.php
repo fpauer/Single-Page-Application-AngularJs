@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -76,7 +77,14 @@ class TokenAuthController extends Controller
 
         }
 
-        return response()->json(compact('user'));
+        $user_settings = 
+            [
+                'user' => $user,
+                'numberOfCalories' => 0,
+                'menus' => UserRepositoryInterface::USER_MENU[$user['role']]
+            ];
+        
+        return response()->json($user_settings);
     }
 
     /*
@@ -85,10 +93,12 @@ class TokenAuthController extends Controller
      */
     public function register(Request $request){
 
+        //checking if the fields are right
         $validator = Validator::make(Input::all(), [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'same:password',
         ]);
 
         if ($validator->fails())
@@ -98,11 +108,12 @@ class TokenAuthController extends Controller
                 'errors'        => $validator->errors()
             ]);
         }
-        
-        $newuser = $request->all();
-        $password = Hash::make($request->input('password'));
+
+        $newuser = Input::all();
+        $password = Hash::make(Input::get('password'));
 
         $newuser['password'] = $password;
+        $newuser['role'] = UserRepositoryInterface::ROLE_USER;
 
         return $this->users->create($newuser);
     }

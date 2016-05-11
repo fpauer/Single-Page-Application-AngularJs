@@ -48,7 +48,7 @@ class MealsControllerTest extends TestCase
                 $meals = [
                     'description' => 'Nice slice of bread',
                     'calories' => 123
-                    , 'eat_at' => Carbon\Carbon::now()];
+                    , 'consumed_at' => Carbon\Carbon::now()];
 
                 $this->post('/api/meals', $meals, $this->header)
                     ->seeJson([
@@ -63,7 +63,7 @@ class MealsControllerTest extends TestCase
                     $meals = [
                         'description' => 'Nice slice of bread 2',
                         'calories' => 1234
-                        , 'eat_at' => Carbon\Carbon::now()];
+                        , 'consumed_at' => Carbon\Carbon::now()];
 
                     $this->post('/api/meals', $meals, $this->header)
                         ->seeJson([
@@ -86,7 +86,7 @@ class MealsControllerTest extends TestCase
             $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
             $meal['description'] = 'Updated Nice slice of bread 1';
             $meal['calories'] = 1234;
-            $meal['eat_at'] = Carbon\Carbon::now();
+            $meal['consumed_at'] = Carbon\Carbon::now();
 
             $this->refreshApplication();
             $this->put('/api/meals/'.$meal['id'], $meal, $this->header)->assertResponseOk();

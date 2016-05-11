@@ -17,7 +17,7 @@ class CreateMealsTable extends Migration
             $table->string('description', 100);
             $table->integer('calories');
             $table->integer('user_id');
-            $table->datetime('eat_at');
+            $table->datetime('consumed_at');
             $table->date('created_at');
             $table->date('updated_at');
         });

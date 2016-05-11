@@ -35,4 +35,15 @@ class UserRepository implements UserRepositoryInterface
     {
         return User::create($user);
     }
+
+    /**
+     * Remove user by email
+     *
+     * @param $email
+     * @return boolean
+     */
+    public function getUserByEmail($email)
+    {
+        return User::where('email', '=', $email)->get()->first();
+    }
 }
