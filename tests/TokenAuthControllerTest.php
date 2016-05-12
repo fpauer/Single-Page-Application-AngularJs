@@ -9,13 +9,6 @@ class TokenAuthControllerTest extends TestCase
 
     public function __construct()
     {
-        // Nós não temos qualquer interesse em testar o Eloquent
-        //$this->mock = Mockery::mock('Eloquent', 'User');
-    }
-
-    public function tearDown()
-    {
-        //Mockery::close();
     }
 
     /**
@@ -88,6 +81,26 @@ class TokenAuthControllerTest extends TestCase
         ->seeJson([
             "name" => "test"
         ]);
+    }
+
+    /**
+     * testing the update of the user expected calories
+     */
+    public function testUpdateCalories()
+    {
+        $loginuser = ['email' => 'test@test.com', 'password' => 'te$te1'];
+        $token = json_decode($this->post('/api/auth/authenticate', $loginuser)->response->getContent());
+        if( property_exists($token, 'token') )
+        {
+            $this->header = ['Authorization' => 'Bearer ' . (string)$token->token];
+        }
+        $this->refreshApplication();
+
+        $data = json_decode($this->get('/api/auth/authenticate/user', ['Authorization' => 'Bearer ' . (string)$token->token])->response->getContent());
+
+        $calories = ['calories_expected' => 2134];
+        $this->put('/api/user/'.$data->user->id."/calories", $calories, $this->header)->assertResponseOk();
+
     }
 
 

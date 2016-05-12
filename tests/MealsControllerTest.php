@@ -29,7 +29,8 @@ class MealsControllerTest extends TestCase
     {
         if( !empty($this->header))
         {
-            $this->get('/api/meals', $this->header)->assertNotNull([]);
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
+            $this->get('/api/user/'.$data->user->id.'/meals', $this->header)->assertNotNull([]);
         }
     }
 
@@ -41,8 +42,9 @@ class MealsControllerTest extends TestCase
     public function testStore()
     {
         if( !empty($this->header)) {
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
 
-            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
             if( sizeof($meal) == 0 )
             {
                 $meals = [
@@ -50,13 +52,13 @@ class MealsControllerTest extends TestCase
                     'calories' => 123
                     , 'consumed_at' => Carbon\Carbon::now()];
 
-                $this->post('/api/meals', $meals, $this->header)
+                $this->post('/api/user/'.$data->user->id.'/meals', $meals, $this->header)
                     ->seeJson([
-                        'user_id' => 1
+                        'user_id' => $data->user->id
                     ]);
 
 
-                $meal = json_decode($this->get('/api/meals/2', $this->header)->response->getContent(), true);
+                $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
                 if( sizeof($meal) == 0 )
                 {
                     $this->refreshApplication();
@@ -65,9 +67,9 @@ class MealsControllerTest extends TestCase
                         'calories' => 1234
                         , 'consumed_at' => Carbon\Carbon::now()];
 
-                    $this->post('/api/meals', $meals, $this->header)
+                    $this->post('/api/user/'.$data->user->id.'/meals', $meals, $this->header)
                         ->seeJson([
-                            'user_id' => 1
+                            'user_id' => $data->user->id
                         ]);
                 }
             }
@@ -82,14 +84,19 @@ class MealsControllerTest extends TestCase
     public function testUpdate()
     {
         if( !empty($this->header)) {
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
 
-            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
-            $meal['description'] = 'Updated Nice slice of bread 1';
-            $meal['calories'] = 1234;
-            $meal['consumed_at'] = Carbon\Carbon::now();
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
+            if( $meal )
+            {
+                $meal['description'] = 'Updated Nice slice of bread 2';
+                $meal['calories'] = 1234;
+                $meal['consumed_at'] = Carbon\Carbon::now();
 
-            $this->refreshApplication();
-            $this->put('/api/meals/'.$meal['id'], $meal, $this->header)->assertResponseOk();
+                $this->refreshApplication();
+
+                $this->put('/api/user/'.$data->user->id.'/meals/'.$meal['id'], $meal, $this->header)->assertResponseOk();
+            }
         }
     }
 
@@ -101,11 +108,13 @@ class MealsControllerTest extends TestCase
     public function testDestroy()
     {
         if( !empty($this->header)) {
-            $meal = json_decode($this->get('/api/meals/1', $this->header)->response->getContent(), true);
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
+
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
 
             if( sizeof($meal) > 0 )
             {
-                $this->delete('/api/meals/'.$meal['id'], [], $this->header)->assertResponseOk();
+                $this->delete('/api/user/'.$data->user->id.'/meals/'.$meal['id'], [], $this->header)->assertResponseOk();
             }
         }
     }

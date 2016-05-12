@@ -22,7 +22,7 @@ class MealsController extends Controller
      * 
      * @return mixed
      */
-    public function index()
+    public function index($user_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
         $list = $this->meals->getListMealsByUserId($user);
@@ -34,10 +34,10 @@ class MealsController extends Controller
      *
      * @return mixed
      */
-    public function show($id)
+    public function show($user_id, $meal_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $id);
+        $meal = $this->meals->getMealById($user->id, $meal_id);
         return $meal;
     }
     
@@ -59,11 +59,11 @@ class MealsController extends Controller
      *
      * @return mixed
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id, $meal_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $mealFound = $this->meals->getMealById($user->id, $id);
-        
+        $mealFound = $this->meals->getMealById($user->id, $meal_id);
+
         if($mealFound)
         {
             $meal = $request->all();
@@ -85,10 +85,10 @@ class MealsController extends Controller
      *
      * @return mixed
      */
-    public function destroy($id)
+    public function destroy($user_id, $meal_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $id);
+        $meal = $this->meals->getMealById($user->id, $meal_id);
 
         if($meal){
             $this->meals->delete($meal);

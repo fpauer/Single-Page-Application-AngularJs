@@ -25,6 +25,8 @@ class Authenticate
             }
         }
 
-        return $next($request);
+        $user = JWTAuth::parseToken()->authenticate();
+        return $user;
+        //return $next($request);
     }
 }

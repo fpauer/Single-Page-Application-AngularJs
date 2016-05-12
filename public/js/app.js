@@ -3,7 +3,12 @@
  */
 
     angular
-        .module('app.meals', ['ui.router', 'satellizer', 'ui.bootstrap.showErrors', 'ngAnimate', 'ui.bootstrap', 'zingchart-angularjs'])
+        .module('app.meals', ['ui.router'
+                            , 'satellizer'
+                            , 'ui.bootstrap'
+                            , 'ui.bootstrap.showErrors'
+                            , 'ngAnimate'
+                            , 'zingchart-angularjs'])
         .config( moduleConfig );
 
 
@@ -53,7 +58,7 @@
                         .then(function (response) {
                             if (response !== undefined) {
                                 $rootScope.currentUser = response.data.user;
-                                $rootScope.numberOfCalories = response.data.numberOfCalories;
+                                $rootScope.numberOfCalories = parseInt(response.data.user.calories_expected);
                                 $rootScope.menus = response.data.menus;
                             }
                         })
@@ -68,6 +73,7 @@
                     $location.url('/login');
                 }
             };
+            $rootScope.checkAuthentication();
 
             $rootScope.$on('$stateChangeStart', function (event) {
                 $rootScope.checkAuthentication();
@@ -84,3 +90,16 @@
                 });
             };
         });
+
+angular
+    .module('app.meals')
+    .filter('range', function() {
+        return function(input, min, max) {
+            min = parseInt(min); //Make string input int
+            max = parseInt(max);
+            for (var i=min; i<max; i++)
+                input.push(i);
+            return input;
+        };
+    });
+

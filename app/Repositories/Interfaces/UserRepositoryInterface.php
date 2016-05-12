@@ -10,6 +10,7 @@ namespace App\Repositories\Interfaces;
 interface UserRepositoryInterface
 {
 
+    const DEFAULT_EXPECTED_CALORIES_PERSON = 2000;
     const ROLE_USER = 1;
     const ROLE_MANAGER = 2;
     const ROLE_ADMIN = 3;
@@ -27,6 +28,14 @@ interface UserRepositoryInterface
      * @return User
      */
     public function create($user);
+
+    /**
+     * Save an user
+     *
+     * @param $user
+     * @return boolean
+     */
+    public function save($user);
     
     /**
      * Remove user by email
@@ -37,6 +46,14 @@ interface UserRepositoryInterface
     public function deleteUserByEmail($email);
 
     /**
+     * Remove user by id
+     *
+     * @param $id
+     * @return boolean
+     */
+    public function getUserById($id);
+
+    /**
      * Remove user by email
      *
      * @param $email
@@ -44,4 +61,11 @@ interface UserRepositoryInterface
      */
     public function getUserByEmail($email);
 
+    /**
+     * Save the expected calories
+     *
+     * @param $user
+     * @return booleanr
+     */
+    public function updateCaloriesExpected($user);
 }

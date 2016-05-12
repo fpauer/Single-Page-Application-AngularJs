@@ -80,7 +80,6 @@ class TokenAuthController extends Controller
         $user_settings = 
             [
                 'user' => $user,
-                'numberOfCalories' => 0,
                 'menus' => UserRepositoryInterface::USER_MENU[$user['role']]
             ];
         
@@ -114,8 +113,36 @@ class TokenAuthController extends Controller
 
         $newuser['password'] = $password;
         $newuser['role'] = UserRepositoryInterface::ROLE_USER;
-
+        $newuser['calories_expected'] = UserRepositoryInterface::DEFAULT_EXPECTED_CALORIES_PERSON;
+        
         return $this->users->create($newuser);
+    }
+
+    /**
+     * Updating the user expected calories
+     *
+     * @param $caloris
+     */
+    public function updateCalories(Request $request)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if($user) {
+            $data = Input::all();
+
+            $user['calories_expected'] = $data['calories_expected'];
+
+            if ( $this->users->updateCaloriesExpected($user) )
+            {
+                return  response('Success',200);
+            }
+            else
+            {
+                return response('Not saved',500);
+            }
+        }else{
+            return response('Unauthoraized',401);
+        }
     }
 }
 

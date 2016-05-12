@@ -4,36 +4,67 @@
 <div class="col-sm-10 col-sm-offset-1" ng-controller="MealsController as mealsCtrl">
     <div class="well">
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-6">
                 <h4>{{action}} meal</h4>
-                <form name="addMeal">
+                <form name="addMealForm" novalidate>
                     <input type="hidden" name="id" class="form-control" ng-model="newMeal.id" required />
                     <div class="form-group" show-errors>
-                        <input type="text" name="description" class="form-control" placeholder="Description" ng-model="newMeal.description" required />
-                        <p class="help-block" ng-if="addMeal.description.$error.required">Description is required</p>
+                        <input type="text" name="description"
+                               class="form-control"
+                               placeholder="Description"
+                               ng-model="newMeal.description"
+                               required />
+                        <p class="help-block" ng-if="addMealForm.description.$error.required">Description is required</p>
                     </div>
                     <div class="form-group" show-errors>
-                        <input type="number" name="calories" class="form-control" placeholder="Calories" ng-model="newMeal.calories" required />
-                        <p class="help-block" ng-if="addMeal.calories.$error.required">Calories is required</p>
+                        <input type="text" name="calories"
+                               class="form-control"
+                               placeholder="Calories"
+                               ng-model="newMeal.calories"
+                               valid-number
+                               required />
+                        <p class="help-block" ng-if="addMealForm.calories.$error.required">Calories is required</p>
                     </div>
                     <div class="form-group" show-errors>
                         <p class="input-group">
-                            <input type="text" name="dateConsumed" id="dateConsumed" placeholder="dd-MM-yyyy" class="form-control" uib-datepicker-popup="{{format}}" ng-model="newMeal.consumed_at" is-open="popupEdit.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                            <input type="text" name="dateConsumed" id="dateConsumed"
+                                   placeholder="dd-MM-yyyy"
+                                   class="form-control"
+                                   uib-datepicker-popup="{{format}}"
+                                   ng-model="newMeal.consumed_at"
+                                   is-open="popupEdit.opened"
+                                   datepicker-options="dateOptions"
+                                   ng-required="true"
+                                   close-text="Close" />
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="openEdit()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
+                            <select ng-model="hour" ng-options="n for n in [] | range:0:24"></select>
+                            <select ng-model="minute" ng-options="n for n in [] | range:0:61"></select>
                         </p>
-                        <p class="help-block" ng-if="addMeal.dateConsumed.$error.required">Consumed at is required</p>
+                        <p class="help-block" ng-if="addMealForm.dateConsumed.$error.required">Consumed at is required</p>
                     </div>
                     <div class="form-group">
-                        <td><button class="btn btn-info btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-ok" ></span> Save</button></td>
+                        <td><button class="btn btn-info btn-xs" ng-click="save()">  <span class="glyphicon glyphicon-ok" ></span> Save</button></td>
                         <td><button class="btn btn-default btn-xs" ng-click="clean()">  <span class="glyphicon glyphicon-refresh" ></span> Clean</button></td>
                     </div>
                 </form>
             </div>
+
+            <div class="col-sm-2">&nbsp;</div>
             <div class="col-sm-4">
                 <h4 class="text-center">Calories consumed today</h4>
                 <div zingchart id="chart-1" zc-json="chartData" zc-width="100%" zc-height="200px" ></div>
+            </div>
+        </div>
+        <div class="alert alert-success" ng-show="showSuccessAlert">
+            <button type="button" class="close" data-ng-click="showSuccess(false)" >×</button>
+            <strong>Done!</strong> {{successTextAlert}}
+        </div>
+        <div class="alert alert-danger" ng-show="showErrorAlert">
+            <button type="button" class="close" data-ng-click="showError(false)" >×</button>
+            <div ng-repeat="error in errors">
+                {{error}}
             </div>
         </div>
         <hr />
@@ -42,7 +73,13 @@
                 <div class="form-group" show-errors>
                     <label for="dateFrom">From</label>
                     <p class="input-group">
-                        <input type="text" name="dateFrom" id="dateFrom" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dateFrom" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                        <input type="text" name="dateFrom"  id="dateFrom"
+                               class="form-control"
+                               uib-datepicker-popup="{{format}}"
+                               ng-model="dateFrom" is-open="popup1.opened"
+                               datepicker-options="dateOptions"
+                               ng-required="true"
+                               close-text="Close" />
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
@@ -54,13 +91,31 @@
                 <div class="form-group" show-errors>
                     <label for="dateTo">To</label>
                     <p class="input-group">
-                        <input type="text" name="dateTo" id="dateTo" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dateTo" is-open="popup2.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                        <input type="text" name="dateTo" id="dateTo"
+                               class="form-control"
+                               uib-datepicker-popup="{{format}}"
+                               ng-model="dateTo"
+                               is-open="popup2.opened"
+                               datepicker-options="dateOptions"
+                               ng-required="true"
+                               close-text="Close" />
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
                     </p>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="form-group" >
+                    <label for="hourFrom">Time</label>
+                    <select ng-model="hourFrom" id="hourFrom" ng-options="n for n in [] | range:0:24"></select>
+                    <select ng-model="minuteFrom" id="minuteFrom" ng-options="n for n in [] | range:0:61"></select>
+                    <label for="hourTo"> and </label>
+                    <select ng-model="hourTo" id="hourTo" ng-options="n for n in [] | range:0:24"></select>
+                    <select ng-model="minuteTo" id="minuteTo" ng-options="n for n in [] | range:0:61"></select>
+                </div>
+            </div>
+
         </div>
         </form>
         <table class="table table-striped" ng-show="meals.length>0">
@@ -76,7 +131,7 @@
                 <td>{{meal.calories }}</td>
                 <td>{{meal.consumed_at | date:'yyyy-MM-dd HH:mm' }}</td>
                 <td><button class="btn btn-primary btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
-                <td><button class="btn btn-danger btn-xs" ng-click="delete($index)">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
+                <td><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
             </tr>
         </table>
     </div>

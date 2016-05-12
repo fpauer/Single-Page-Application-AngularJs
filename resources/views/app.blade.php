@@ -33,11 +33,13 @@
 <script src="{{ URL::asset('node_modules/angular-animate/angular-animate.js') }}"></script>
 <script src="{{ URL::asset('node_modules/satellizer/satellizer.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/ui-bootstrap/ui-bootstrap-tpls-1.3.2.js') }}"></script>
-<script src="{{ URL::asset('js/showErrors/showErrors.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/zingchart/zingchart.min.js') }}" ></script>
 <script src="{{ URL::asset('js/plugins/zingchart/zingchart-angularjs.js') }}" ></script>
+<script src="{{ URL::asset('js/modules/showErrors.js') }}"></script>
 
 <script src="{{ URL::asset('js/app.js') }}"></script>
+<script src="{{ URL::asset('js/services/modalService.js') }}"></script>
+<script src="{{ URL::asset('js/directives/validNumberDirective.js') }}"></script>
 <script src="{{ URL::asset('js/authController.js') }}"></script>
 <script src="{{ URL::asset('js/mealsController.js') }}"></script>
 <script src="{{ URL::asset('js/menuController.js') }}"></script>

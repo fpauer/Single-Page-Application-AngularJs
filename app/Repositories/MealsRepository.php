@@ -32,9 +32,16 @@ class MealsRepository implements MealsRepositoryInterface
      */
     public function save($meal)
     {
-        $meal = $this->getMealById($meal['user_id'], $meal['id']);
+        $mealExist = $this->getMealById($meal['user_id'], $meal['id']);
 
-        if($meal) return $meal->save();
+        if($mealExist)
+        {
+            $mealExist['description'] = $meal['description'];
+            $mealExist['calories'] = $meal['calories'];
+            $mealExist['consumed_at'] = $meal['consumed_at'];
+
+            return $mealExist->save();
+        }
         return false;
     }
 

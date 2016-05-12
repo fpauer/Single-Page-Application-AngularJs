@@ -6,17 +6,23 @@
         .module('app.meals')
         .controller('MealsController', MealsController);
 
-     MealsController.$inject = ['$state', '$http', '$rootScope', '$scope', '$auth'];
+     MealsController.$inject = ['$state', '$http', '$rootScope', '$scope', '$auth', '$timeout', 'modalService'];
 
-    function MealsController($state, $http, $rootScope, $scope, $auth) {
+    function MealsController($state, $http, $rootScope, $scope, $auth, $timeout, modalService) {
 
-
+        $scope.apiPath = '/api/user/'+$rootScope.currentUser.id+'/meals/';
+        $scope.hour = new Date().getHours();
+        $scope.minute = new Date().getMinutes();
+        $scope.hourFrom = 0;
+        $scope.minuteFrom = 0;
+        $scope.hourTo = 23;
+        $scope.minuteTo = 59;
         $scope.action = "New";
 
         $scope.caloriesConsumed = function(){
             var total = 0;
             for(var i = 0; i < $scope.meals.length; i++){
-                total += ($scope.meals[i].calories);
+                total += parseInt($scope.meals[i].calories);
             }
             return total;
         }
@@ -54,57 +60,103 @@
         
         $scope.clean = function (index) {
             $scope.action = "New";
+            $scope.hour = new Date().getHours();
+            $scope.minute = new Date().getMinutes();
             $scope.newMeal = {
                 'id': 0,
                 'description': '',
                 'calories': '',
                 'consumed_at': new Date()
             };
+            $scope.$broadcast('show-errors-reset');
+
         };
         $scope.clean();
         
         $scope.edit = function (index) {
             $scope.action = "Edit";
             $scope.newMeal = $scope.meals[index];
-            
+            if( typeof $scope.newMeal.consumed_at == 'string')
+            {
+                $scope.newMeal.consumed_at = new Date($scope.newMeal.consumed_at.replace(/\s/, 'T'));
+            }
+            $scope.hour = $scope.newMeal.consumed_at.getHours();
+            $scope.minute = $scope.newMeal.consumed_at.getMinutes();
         };
         
         $scope.init = function () {
-            //$http.get('/api/meals').success(function (data) {
-            //    $scope.meals = data;
-            //})
+            $http.get($scope.apiPath).then(complete).catch(failed);
+
+            function complete(response, status, headers, config) {
+                $scope.meals = response.data;
+                $scope.clean();
+                $scope.updateChart();
+            }
+
+            function failed(e) {
+                var newMessage = 'XHR Failed for getCustomer'
+                if (e.data && e.data.description) {
+                    newMessage = newMessage + '\n' + e.data.description;
+                }
+                e.data.description = newMessage;
+                logger.error(newMessage);
+                return $q.reject(e);
+            }
         };
-        $scope.init();
 
         $scope.save = function () {
-            $http.post('/api/meals', $scope.newMeal).success(function (data) {
-                $scope.meals.push(data);
-                $scope.newMeal = {};
-                $scope.updateChart();
-            });
+
+            $scope.$broadcast('show-errors-check-validity');
+            if( $scope.addMealForm.$valid )
+            {
+                $scope.newMeal.consumed_at.setUTCHours( parseInt($scope.hour) );
+                $scope.newMeal.consumed_at.setMinutes( parseInt($scope.minute) );
+
+                if( $scope.newMeal.id == 0 )
+                {
+                    $http.post($scope.apiPath, $scope.newMeal).then(complete);
+                }
+                else
+                {
+                    $http.put($scope.apiPath + $scope.newMeal.id, $scope.newMeal).then(complete);
+                }
+            }
+
+            function complete(response, status, headers, config) {
+                $scope.successTextAlert = "Saved successfully!";
+                $scope.showSuccess(true);
+                $scope.init();
+            }
         };
 
-        $scope.update = function (index) {
-            $http.put('/api/meals/' + $scope.meals[index].id, $scope.meals[index]).success(function (data) {
-                $scope.newMeal = {};
-                $scope.updateChart();
-            });
-        };
-
-        $scope.delete = function (index) {
-            $http.delete('/api/meals/' + $scope.meals[index].id).success(function () {
-                $scope.meals.splice(index, 1);
-                $scope.updateChart();
+        $scope.delete = function ($index) {
+            $http.delete($scope.apiPath + $scope.meals[$index].id).success(function () {
+                $scope.successTextAlert = "Deleted successfully!";
+                $scope.showSuccess(true);
+                $scope.init();
             });
         };
 
         $scope.logout = function () {
-            console.log('logout');
             $auth.logout().then(function () {
                 $rootScope.currentUser = null;
                 $state.go('login');
             });
         };
+
+        $scope.confirmDelete = function ($index) {
+
+            var modalOptions = {
+                closeButtonText: 'Cancel',
+                actionButtonText: 'Delete Meal',
+                headerText: 'Delete the meal "' + $scope.meals[$index].description + '" ?',
+                bodyText: 'Are you sure you want to delete this ?'
+            };
+
+            modalService.showModal({}, modalOptions).then(function (result) {
+                $scope.delete($index);
+            });
+        }
 
 
 
@@ -147,11 +199,10 @@
             opened: false
         };
 
+
         // END - DatePicker Controler --------------------------------------------------------------------------------
 
         //Chart Element ----------------------------------------------------------------------------------------------
-        $scope.chartLabels = ["Consumed", "Expected"];
-
         $scope.initChart = function()
         {
             $scope.chartData = {
@@ -205,9 +256,23 @@
             {
                 $scope.chartData.series[0].backgroundColor = "#28C2D1";
                 $scope.chartData.series[1].values = [remained];
-
             }
+            //console.log($scope.chartData.series);
         };
         $scope.updateChart();
         //END - Chart Element ----------------------------------------------------------------------------------------------
+
+        //alert methos (maybe a directive) ---------------------------------------------------------------------------------
+        $scope.successTextAlert = "Saved successfully!";
+        $scope.showSuccessAlert = false;
+        $scope.showSuccess = function(value) {
+            $scope.showSuccessAlert = value;
+            $timeout(function() { $scope.showSuccessAlert = false; }, 3000);
+        };
+        $scope.showErrorAlert = false;
+        $scope.showError = function(value) {
+            $scope.showErrorAlert = value;
+        };
+
+        $scope.init();
     };

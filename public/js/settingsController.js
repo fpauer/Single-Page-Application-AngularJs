@@ -8,27 +8,22 @@ angular
 
 function SettingsController($state, $http, $rootScope, $scope, $auth) {
 
-    $scope.numberOfCalories = 0;
+    $scope.onlyNumbers = /^\d+$/;
     $scope.successTextAlert = "Settings saved successfully!";
     $scope.showSuccessAlert = false;
+    $scope.numberOfCalories = $rootScope.numberOfCalories;
 
     // switch flag
     $scope.showSuccess = function(value) {
         $scope.showSuccessAlert = value;
     };
 
-    $scope.init = function () {
-        $scope.numberOfCalories =  $rootScope.numberOfCalories;
-    };
-
     $scope.save = function () {
         $rootScope.numberOfCalories = $scope.numberOfCalories;
-        $scope.showSuccess(true);
-        //$http.post('/api/meals', $scope.newMeal).success(function (data) {
-        //    $scope.meals.push(data);
-        //    $scope.newMeal = {};
-        //});
+        $http.put('/api/user/' + $rootScope.currentUser.id +"/calories", {'calories_expected': $rootScope.numberOfCalories})
+            .success(function (data)
+            {
+                $scope.showSuccess(true);
+            });
     };
-
-    $scope.init();
 }
