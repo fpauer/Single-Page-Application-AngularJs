@@ -114,6 +114,16 @@
                     </p>
                 </div>
             </div>
+            <div class="col-md-4" ng-show="users.length>1">
+                <label for="userSelected">Users</label>
+                <div class="form-group">
+                    <select name="userSelected" id="userSelected"
+                            ng-model="userSelected"
+                            ng-options="user.id as user.name for user in users track by user.id"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
             <div class="col-md-4">
                 <div class="form-group" >
                     <label for="hourFrom">Time</label>

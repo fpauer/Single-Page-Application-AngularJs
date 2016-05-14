@@ -80,7 +80,7 @@ class MealsRepository implements MealsRepositoryInterface
      */
     public function getListMealsByUserId($user_id)
     {
-        return Meals::where('user_id', '=', $user_id)->get();
+        return Meals::where('user_id', '=', $user_id)->orderBy('consumed_at', 'DESC')->get();
     }
 
 

@@ -24,7 +24,6 @@ class MealsController extends Controller
      */
     public function index($user_id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
         return $this->meals->getListMealsByUserId($user_id);
     }
 
@@ -35,8 +34,6 @@ class MealsController extends Controller
      */
     public function indexByDates($user_id, $date_from, $date_to, $time_from, $time_to)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-    
         return $this->meals->getListMealsByUserDates($user_id, $date_from, $date_to, $time_from, $time_to);
     }
 
@@ -48,8 +45,7 @@ class MealsController extends Controller
      */
     public function show($user_id, $meal_id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        return $this->meals->getMealById($user->id, $meal_id);
+        return $this->meals->getMealById($user_id, $meal_id);
     }
     
     /**
@@ -72,22 +68,30 @@ class MealsController extends Controller
      */
     public function update(Request $request, $user_id, $meal_id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $mealFound = $this->meals->getMealById($user->id, $meal_id);
+        $mealFound = $this->meals->getMealById($user_id, $meal_id);
 
         if($mealFound)
         {
             $meal = $request->all();
             if( $this->meals->save($meal) )
             {
-                return  response('Success',200);
+                return response()->json([
+                    'message'   => 'Success',
+                    'errors'    => []
+                ], 200);
             }
             else
             {
-                return response('Not saved',500);
+                return response()->json([
+                    'message'   => 'Update Failed',
+                    'errors'        => ['user' => ["Meal not saved"]]
+                ], 500);
             }
         }else{
-            return response('Unauthoraized',401);
+            return response()->json([
+                'message'   => 'Resource Not found',
+                'errors'        => ['meal' => ["The meal id passed didnt exist."]]
+            ], 404);
         }
     }
 
@@ -98,8 +102,7 @@ class MealsController extends Controller
      */
     public function destroy($user_id, $meal_id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $meal_id);
+        $meal = $this->meals->getMealById($user_id, $meal_id);
 
         if($meal){
             $this->meals->delete($meal);

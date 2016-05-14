@@ -9,19 +9,6 @@ namespace App\Repositories\Interfaces;
  */
 interface UserRepositoryInterface
 {
-
-    const DEFAULT_EXPECTED_CALORIES_PERSON = 2000;
-    const ROLE_USER = 1;
-    const ROLE_MANAGER = 2;
-    const ROLE_ADMIN = 3;
-    
-    const USER_MENU = [
-         [['link'=>'meal', 'title'=>'Meals', 'active'=> false]],
-         [['link'=>'meal', 'title'=>'Meals', 'active'=> false], ['link'=>'users', 'title'=>'Users', 'active'=> false]],
-         [['link'=>'meal', 'title'=>'Meals', 'active'=> false], ['link'=>'users', 'title'=>'Users', 'active'=> false]]
-        ];
-
-
     /**
      * Getting errors from laravel model transactions
      */

@@ -37,6 +37,7 @@ Route::group(['prefix' => 'api'], function () {
         Route::group(array('prefix' => 'user/{user_id}'), function () {
 
             Route::put('/calories', 'TokenAuthController@updateCalories');
+            Route::get('/users', 'TokenAuthController@listUsers');
 
             //routing all methos for Meals
             Route::get('/meals/{date_from}/{time_from}/{date_to}/{time_to}/', 'MealsController@indexByDates');//list all by user

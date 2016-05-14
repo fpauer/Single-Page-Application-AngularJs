@@ -59,11 +59,11 @@ class MealsControllerTest extends TestCase
         if( !empty($this->header)) {
             $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
 
-            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
             if( sizeof($meal) == 0 )
             {
                 $meals = [
-                    'description' => 'Nice slice of bread',
+                    'description' => 'Nice slice of bread 2',
                     'calories' => 123
                     , 'consumed_at' => Carbon\Carbon::now()];
 
@@ -72,13 +72,12 @@ class MealsControllerTest extends TestCase
                         'user_id' => $data->user->id
                     ]);
 
-
-                $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
+                $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/3', $this->header)->response->getContent(), true);
                 if( sizeof($meal) == 0 )
                 {
                     $this->refreshApplication();
                     $meals = [
-                        'description' => 'Nice slice of bread 2',
+                        'description' => 'Nice slice of bread 3',
                         'calories' => 1234
                         , 'consumed_at' => Carbon\Carbon::now()];
 
@@ -101,7 +100,7 @@ class MealsControllerTest extends TestCase
         if( !empty($this->header)) {
             $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
 
-            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/3', $this->header)->response->getContent(), true);
             if( $meal )
             {
                 $meal['description'] = 'Updated Nice slice of bread 2';
@@ -125,12 +124,34 @@ class MealsControllerTest extends TestCase
         if( !empty($this->header)) {
             $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
 
-            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/2', $this->header)->response->getContent(), true);
 
             if( sizeof($meal) > 0 )
             {
                 $this->delete('/api/user/'.$data->user->id.'/meals/'.$meal['id'], [], $this->header)->assertResponseOk();
             }
+        }
+    }
+
+
+    /**
+     * Testing Unauthorized actions
+     *
+     * @return void
+     */
+    public function testMealsUnauthorized()
+    {
+        if( !empty($this->header)) {
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
+
+            $this->get('/api/user/1/meals/1', $this->header)->seeStatusCode(401);
+            
+            //$meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
+
+            //if( sizeof($meal) > 0 )
+            //{
+            //    $this->delete('/api/user/'.$data->user->id.'/meals/'.$meal['id'], [], $this->header)->assertResponseOk();
+            //}
         }
     }
 }

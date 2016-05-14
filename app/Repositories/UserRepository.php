@@ -15,8 +15,31 @@ use Illuminate\Support\Facades\Validator;
 
 class UserRepository implements UserRepositoryInterface
 {
+
+    const DEFAULT_EXPECTED_CALORIES_PERSON = 2000;
+    const ROLE_USER = 1;
+    const ROLE_MANAGER = 2;
+    const ROLE_ADMIN = 3;
+
+    static $MEAL_PERMISSION = ['link'=>'meal', 'title'=>'Meals', 'controller'=> 'App\Http\Controllers\MealsController'];
+    static $USER_PERMISSION = ['link'=>'users', 'title'=>'Users', 'controller'=> 'App\Http\Controllers\UserController'];
+    static $AUTH_PERMISSION = ['link'=>'', 'title'=>'', 'controller'=> 'App\Http\Controllers\TokenAuthController'];
+    
     protected $message = "";
     protected $errors = array();
+
+    public static function getUserPermissions($role)
+    {
+        if(UserRepository::ROLE_USER==$role)//user
+        {
+            return [UserRepository::$MEAL_PERMISSION, UserRepository::$AUTH_PERMISSION];
+        }
+        else//manager, admin
+        {
+            return [UserRepository::$MEAL_PERMISSION, UserRepository::$USER_PERMISSION, UserRepository::$AUTH_PERMISSION];
+            
+        }
+    }
 
     /**
      * Getting errors from laravel model transactions
@@ -60,7 +83,7 @@ class UserRepository implements UserRepositoryInterface
 
         $password = Hash::make($newuser['password']);//creating the password
         $newuser['password'] = $password;
-        $newuser['calories_expected'] = UserRepositoryInterface::DEFAULT_EXPECTED_CALORIES_PERSON;//defining a default value for calories
+        $newuser['calories_expected'] = UserRepository::DEFAULT_EXPECTED_CALORIES_PERSON;//defining a default value for calories
 
         //sometimes the role could come as array or value
         if(isset($newuser['role']) && isset($newuser['role']['id']))

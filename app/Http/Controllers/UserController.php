@@ -81,11 +81,17 @@ class UserController extends Controller
             {
                 if( $this->users->save($user) )
                 {
-                    return  response('Success',200);
+                    return response()->json([
+                        'message'   => 'Success',
+                        'errors'    => []
+                    ], 200);
                 }
                 else
                 {
-                    return response('Not saved',500);
+                    return response()->json([
+                        'message'   => 'Update Failed',
+                        'errors'        => ['user' => ["User not saved"]]
+                    ], 500);
                 }
             }
             else
@@ -93,10 +99,13 @@ class UserController extends Controller
                 return response()->json([
                     'message'   => 'Validation Failed',
                     'errors'        => ['email' => ["The email has already been taken."]]
-                ]);
+                ], 500);
             }
         }else{
-            return response('Unauthoraized',401);
+            return response()->json([
+                'message'   => 'Resource Not found',
+                'errors'        => ['user' => ["The user id passed didnt exist."]]
+            ], 404);
         }
     }
 
@@ -109,11 +118,17 @@ class UserController extends Controller
     {
         if( $this->users->deleteById($id))
         {
-            return  response('Success',200);
+            return response()->json([
+                'message'   => 'Success',
+                'errors'    => []
+            ], 200);
         }
         else
         {
-            return response('Not deleted',500);
+            return response()->json([
+                'message'   => 'Delete Failed',
+                'errors'        => ['user' => ["User not deleted"]]
+            ], 500);
         }
     }
 }

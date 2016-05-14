@@ -12,8 +12,8 @@
     <div class="container">
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
 
-            <ul class="nav navbar-nav navbar-left" ng-repeat="menu in menus">
-                <li><a ui-sref="@{{menu.link}}" ng-class="{ active:menu.active}"><i class="fa fa-btn fa-sign-out"></i>@{{menu.title}}</a></li>
+            <ul class="nav navbar-nav navbar-left">
+                <li ng-repeat="menu in menus" ng-if="menu.link"><a ui-sref="@{{menu.link}}" ng-class="{ active:menu.active}"><i class="fa fa-btn fa-sign-out"></i>@{{menu.title}}</a></li>
             </ul>
             <!-- Right Side Of Navbar -->
             <ul class="nav navbar-nav navbar-right">

@@ -33,6 +33,7 @@ class UserControllerTest extends TestCase
      */
     public function testIndex()
     {
+        $this->Login();
         if( !empty($this->header))
         {
             $this->get('/api/user/', $this->header)->assertNotNull([]);
@@ -46,6 +47,7 @@ class UserControllerTest extends TestCase
      */
     public function testStore()
     {
+        $this->Login();
         if( !empty($this->header)) {
 
             //checking if the validators are working
@@ -71,8 +73,8 @@ class UserControllerTest extends TestCase
             if( property_exists($json, 'message') && $json->message == 'Invalid Credentials' ) {
                 //registeting the user
                 $newuser['password_confirmation'] = 'm@nager1';
-                $newuser['role'] = \App\Repositories\Interfaces\UserRepositoryInterface::ROLE_MANAGER;
-                $newuser['calories_expected'] = \App\Repositories\Interfaces\UserRepositoryInterface::DEFAULT_EXPECTED_CALORIES_PERSON;
+                $newuser['role'] = \App\Repositories\UserRepository::ROLE_MANAGER;
+                $newuser['calories_expected'] = \App\Repositories\UserRepository::DEFAULT_EXPECTED_CALORIES_PERSON;
                 $this->post('/api/user', $newuser, $this->header)
                     ->seeJson([
                         "email" => "manager@test.com",
@@ -105,6 +107,7 @@ class UserControllerTest extends TestCase
      */
     public function testUpdate()
     {
+        $this->Login();
         if( !empty($this->header)) {
             $user = json_decode($this->get('/api/user/3', $this->header)->response->getContent(), true);
             if( $user )
@@ -126,12 +129,58 @@ class UserControllerTest extends TestCase
      */
     public function testDestroy()
     {
+        $this->Login();
         if( !empty($this->header)) {
             $user = json_decode($this->get('/api/user/4', $this->header)->response->getContent(), true);
             if( $user )
             {
                 $this->delete('/api/user/'.$user['id'], [], $this->header)->assertResponseOk();
             }
+        }
+    }
+
+    /**
+     * Testing the post method
+     *
+     * @return void
+     */
+    public function testStoreMeal()
+    {
+        if( !empty($this->header)) {
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
+
+            $meal = json_decode($this->get('/api/user/'.$data->user->id.'/meals/1', $this->header)->response->getContent(), true);
+            if( sizeof($meal) == 0 )
+            {
+                $meals = [
+                    'description' => 'Admin - Nice slice of bread',
+                    'calories' => 123
+                    , 'consumed_at' => Carbon\Carbon::now()];
+
+                $this->post('/api/user/'.$data->user->id.'/meals', $meals, $this->header)
+                    ->seeJson([
+                        'user_id' => $data->user->id
+                    ]);
+
+            }
+        }
+    }
+
+    /**
+     * Testing Unauthorized actions
+     *
+     * @return void
+     */
+    public function testUserUnauthorized()
+    {
+        $loginuser = ['email' => 'test@test.com', 'password' => 'te$te1'];
+        $token = json_decode($this->post('/api/auth/authenticate', $loginuser)->response->getContent());
+        $this->refreshApplication();
+
+        if( !empty($token)) {
+            $headerUnauthorized =  ['Authorization' => 'Bearer ' . (string)$token->token];
+
+            $this->get('/api/user/3', $headerUnauthorized)->seeStatusCode(401);
         }
     }
 }

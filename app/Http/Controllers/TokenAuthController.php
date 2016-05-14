@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Interfaces\UserRepositoryInterface;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -80,7 +80,7 @@ class TokenAuthController extends Controller
         $user_settings = 
             [
                 'user' => $user,
-                'menus' => UserRepositoryInterface::USER_MENU[$user['role']-1]
+                'menus' => UserRepository::getUserPermissions($user['role'])
             ];
         
         return response()->json($user_settings);
@@ -93,7 +93,7 @@ class TokenAuthController extends Controller
     public function register(Request $request){
 
         $newuser = Input::all();
-        $newuser['role'] = UserRepositoryInterface::ROLE_USER;
+        $newuser['role'] = UserRepository::ROLE_USER;
         
         $created = $this->users->create($newuser);
         if( $created )
@@ -132,6 +132,25 @@ class TokenAuthController extends Controller
             }
         }else{
             return response('Unauthoraized',401);
+        }
+    }
+
+    /**
+     * Return the user list for admins,manager, and just the same user for normal user
+     *
+     * @return mixed
+     */
+    public function listUsers()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+
+        if( UserRepository::ROLE_USER == $user['role'] )
+        {
+            return [$user];
+        }
+        else
+        {
+            return $this->users->getAll();
         }
     }
 }

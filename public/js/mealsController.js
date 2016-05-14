@@ -38,7 +38,7 @@
 
         var logger = Logger.getInstance('MealsController');
         $scope.apiDataFormat =  'yyyy-MM-dd';
-        $scope.apiPath = '/api/user/'+$rootScope.currentUser.id+'/meals/';
+        $scope.apiPath = '/api/user/';
         $scope.meals = [];
         $scope.action = "New";
         $scope.hour = new Date().getHours();
@@ -48,6 +48,24 @@
         $scope.hourTo = 23;
         $scope.minuteTo = 59;
         $scope.caloriesConsumedToday = 0;
+        $scope.userSelected = $rootScope.currentUser.id;
+
+        //list of users
+        $scope.users = [];
+        $scope.loadUsers = function () {
+            $http.get($scope.apiPath+$rootScope.currentUser.id+'/users').then(complete).catch(failed);
+
+            function complete(response, status, headers, config) {
+                $scope.users = response.data;
+            }
+
+            function failed(e) {
+                if (e.data && e.data.description) {
+                    logger.error('XHR Failed for {0} : {1}', ['read Users', e.data.description]);
+                }
+            }
+        };
+        $scope.loadUsers();
 
         //cleaning the new/edit from
         $scope.clean = function (index) {
@@ -79,7 +97,8 @@
         //searching the meals for the user
         $scope.search = function(){
 
-            var urlSearch = $scope.apiPath+$filter('date')($scope.dateFrom, $scope.apiDataFormat);
+            var urlSearch = $scope.apiPath+$scope.userSelected+'/meals';
+            urlSearch   += '/'+$filter('date')($scope.dateFrom, $scope.apiDataFormat);
             urlSearch   += '/'+$filter('date')($scope.dateTo, $scope.apiDataFormat);
             urlSearch   += '/'+$filter('formatter')($scope.hourFrom)+':'+$filter('formatter')($scope.minuteFrom);
             urlSearch   += '/'+$filter('formatter')($scope.hourTo)+':'+$filter('formatter')($scope.minuteTo);
@@ -115,11 +134,11 @@
 
                 if( $scope.newMeal.id == 0 )
                 {
-                    $http.post($scope.apiPath, $scope.newMeal).then(complete).catch(failed);//create
+                    $http.post($scope.apiPath+$scope.userSelected+'/meals', $scope.newMeal).then(complete).catch(failed);//create
                 }
                 else
                 {
-                    $http.put($scope.apiPath + $scope.newMeal.id, $scope.newMeal).then(complete).catch(failed);//update
+                    $http.put($scope.apiPath+$scope.userSelected+'/meals/' + $scope.newMeal.id, $scope.newMeal).then(complete).catch(failed);//update
                 }
             }
 
@@ -137,7 +156,7 @@
 
         //deleting the meal
         $scope.delete = function ($index) {
-            $http.delete($scope.apiPath + $scope.meals[$index].id).then(complete).catch(failed);
+            $http.delete($scope.apiPath+$scope.userSelected+'/meals/' + $scope.meals[$index].id).then(complete).catch(failed);
             function complete(response, status, headers, config) {
                 $scope.successTextAlert = "Deleted successfully!";
                 $scope.showSuccess(true);
@@ -267,7 +286,8 @@
         $scope.updateChart = function()
         {
             //getting from REST API the calories consumed for today
-            var urlToday = $scope.apiPath+$filter('date')(new Date(),$scope.apiDataFormat);
+            var urlToday = $scope.apiPath+$scope.userSelected+'/meals';
+            urlToday   += '/'+$filter('date')(new Date(),$scope.apiDataFormat);
             urlToday   += '/'+$filter('date')(new Date(), $scope.apiDataFormat)+'/00:00/23:59';
 
             $http.get(urlToday).then(complete).catch(failed);
@@ -318,7 +338,7 @@
         // END - alerts   --------------------------------------------------------------------------------------------------
 
         //creating a watch to refresh the query
-        $scope.$watchGroup(['dateFrom', 'dateTo', 'hourFrom', 'minuteFrom', 'hourTo', 'minuteTo'], watchSearch);
+        $scope.$watchGroup(['userSelected', 'dateFrom', 'dateTo', 'hourFrom', 'minuteFrom', 'hourTo', 'minuteTo'], watchSearch);
 
         function watchSearch(newVal, oldVal)
         {

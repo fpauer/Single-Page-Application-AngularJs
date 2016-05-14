@@ -69,7 +69,7 @@
                         logger.error('XHR Failed for {0} : {1}', ['login', e.data.description]);
                     }
                     $scope.loginError = true;
-                    $scope.loginErrorText = error.data.message;
+                    $scope.loginErrorText = e.data.message;
 
                 });
             }
