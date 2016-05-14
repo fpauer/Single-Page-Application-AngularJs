@@ -1,5 +1,14 @@
 /**
- * Created by fpauer on 5/9/16.
+ * Created by Fernando on 5/9/16.
+ *
+ * Menu controller
+ *
+ * @param $state
+ * @param $http
+ * @param $rootScope
+ * @param $scope
+ * @param $auth
+ * @constructor
  */
 
 

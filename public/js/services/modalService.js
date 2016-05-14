@@ -1,5 +1,5 @@
 /**
- * Created by fpauer on 5/11/16.
+ * Created by Fernando on 5/11/16.
  */
 
 angular.module('app.meals').service('modalService', ['$uibModal',

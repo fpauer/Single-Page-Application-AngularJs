@@ -18,16 +18,28 @@ class MealsController extends Controller
     }
 
     /**
-     * Return the meals list from the authenticated User
+     * Return the meals list
      * 
      * @return mixed
      */
     public function index($user_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $list = $this->meals->getListMealsByUserId($user);
-        return $list;
+        return $this->meals->getListMealsByUserId($user_id);
     }
+
+    /**
+     * Return the meals list between dates and time
+     *
+     * @return mixed
+     */
+    public function indexByDates($user_id, $date_from, $date_to, $time_from, $time_to)
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+    
+        return $this->meals->getListMealsByUserDates($user_id, $date_from, $date_to, $time_from, $time_to);
+    }
+
 
     /**
      * Return a meal from id
@@ -37,8 +49,7 @@ class MealsController extends Controller
     public function show($user_id, $meal_id)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $meal_id);
-        return $meal;
+        return $this->meals->getMealById($user->id, $meal_id);
     }
     
     /**

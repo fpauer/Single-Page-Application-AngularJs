@@ -1,10 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="col-sm-10 col-sm-offset-1" >
+    <h3>Users</h3>
+</div>
+<div class="col-sm-10 col-sm-offset-1" ng-controller="UsersController as usersCtrl">
+    <div class="well">
+        <div class="row">
+            <div class="col-sm-12">
+                <h4>{{action}} user</h4>
+                <form name="addUserForm" class="form-inline" novalidate  autocomplete="off">
+                    <input type="hidden" name="id" class="form-control" ng-model="newUser.id" required />
+                    <div class="form-group">
+                        <select name="role"
+                                ng-model="newUser.role"
+                                ng-options="option.name for option in availableRoles track by option.id"
+                                class="form-control">
+                        </select>
+                        <p class="help-block" ng-if="addUserForm.role.$error.required">Role is required</p>
+                    </div>
+                    <div class="form-group" show-errors>
+                        <input type="text" name="name" class="form-control" placeholder="Name" ng-model="newUser.name" required >
+                        <p class="help-block" ng-if="addUserForm.name.$error.required">Name is required</p>
+                    </div>
+                    <div class="form-group" show-errors>
+                        <input type="email" name="email" class="form-control" placeholder="Email" ng-model="newUser.email" required >
+                        <p class="help-block" ng-if="addUserForm.email.$error.required">Email is required</p>
+                        <p class="help-block" ng-if="addUserForm.email.$error.email">Email address is invalid</p>
+                    </div>
 
-</body>
-</html>
+                    <div class="form-group" show-errors ng-show="action=='New'">
+                        <input type="password" name="ppassword" class="form-control" placeholder="Password" ng-model="newUser.password" ng-required="action=='New'" >
+                        <p class="help-block" ng-if="addUserForm.password.$error.required">Password is required</p>
+                    </div>
+                    <div class="form-group" show-errors ng-show="action=='New'">
+                        <input type="password" name="ppassword_confirmation" class="form-control" placeholder="Password Confirmation" ng-model="newUser.password_confirmation" ng-required="action=='New'" >
+                        <p class="help-block" ng-if="addUserForm.password_confirmation.$error.required">Password Confirmation is required</p>
+                    </div>
+                    <div class="form-group">
+                        <td><button class="btn btn-info btn-xs" ng-click="save()">  <span class="glyphicon glyphicon-ok" ></span> Save</button></td>
+                        <td><button class="btn btn-default btn-xs" ng-click="clean()">  <span class="glyphicon glyphicon-refresh" ></span> Clean</button></td>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="alert alert-success" ng-show="showSuccessAlert">
+            <button type="button" class="close" data-ng-click="showSuccess(false)" >×</button>
+            <strong>Done!</strong> {{successTextAlert}}
+        </div>
+        <div class="alert alert-danger" ng-show="showErrorAlert">
+            <button type="button" class="close" data-ng-click="showError(false)" >×</button>
+            <div ng-repeat="error in errors">
+                {{error}}
+            </div>
+        </div>
+        <hr />
+        <table class="table table-striped" ng-show="users.length>0">
+            <tr>
+                <th> Name </th>
+                <th> Email </th>
+                <th> Role </th>
+                <th> &nbsp; </th>
+                <th> &nbsp; </th>
+            </tr>
+            <tr ng-repeat='user in users'>
+                <td>{{user.name }}</td>
+                <td>{{user.email }}</td>
+                <td>{{availableRoles[user.role-1].name}}</td>
+                <td><button class="btn btn-primary btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
+                <td><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)" ng-show="user.id!=currentUser.id">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
+            </tr>
+        </table>
+    </div>
+</div>

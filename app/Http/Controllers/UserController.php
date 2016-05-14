@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,23 +28,20 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $list = $this->meals->getListMealsByUserId($user);
-        return $list;
+        return $this->users->getAll();
     }
 
+
     /**
-     * Return a meal from id
+     * Return a user from id
      *
      * @return mixed
      */
     public function show($id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $id);
-        return $meal;
+        return $this->users->getUserById($id);
     }
-    
+
     /**
      * Store a new meal for the authenticated User
      *
@@ -51,28 +49,18 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //checking if the fields are right
-        $validator = Validator::make(Input::all(), [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'password_confirmation' => 'same:password',
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json([
-                'message'   => 'Validation Failed',
-                'errors'        => $validator->errors()
-            ]);
-        }
-
         $newuser = Input::all();
-        $password = Hash::make(Input::get('password'));
-
-        $newuser['password'] = $password;
-
-        return $this->users->create($newuser);
+        $created = $this->users->create($newuser);
+        if( $created )
+        {
+            return $created;
+        }
+        else {
+            return response()->json([
+                'message' => $this->users->getMessage(),
+                'errors' => $this->users->getErrors()
+            ], 500);
+        }
     }
 
     /**
@@ -87,13 +75,25 @@ class UserController extends Controller
         if($userFound)
         {
             $user = $request->all();
-            if( $this->users->save($user) )
+
+            $userExists = $this->users->getUserDeletedByEmail($user['email']);
+            if($userExists->id == $user['id'])
             {
-                return  response('Success',200);
+                if( $this->users->save($user) )
+                {
+                    return  response('Success',200);
+                }
+                else
+                {
+                    return response('Not saved',500);
+                }
             }
             else
             {
-                return response('Not saved',500);
+                return response()->json([
+                    'message'   => 'Validation Failed',
+                    'errors'        => ['email' => ["The email has already been taken."]]
+                ]);
             }
         }else{
             return response('Unauthoraized',401);
@@ -101,20 +101,19 @@ class UserController extends Controller
     }
 
     /**
-     * Destroy a meal
+     * Destroy a user
      *
      * @return mixed
      */
     public function destroy($id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $meal = $this->meals->getMealById($user->id, $id);
-
-        if($meal){
-            $this->meals->delete($meal);
+        if( $this->users->deleteById($id))
+        {
             return  response('Success',200);
-        }else{
-            return response('Unauthoraized',401);
+        }
+        else
+        {
+            return response('Not deleted',500);
         }
     }
 }

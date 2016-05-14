@@ -20,7 +20,7 @@ class TokenAuthControllerTest extends TestCase
     {
 
         //checking if the validators are working
-        $response = $this->post('/api/auth/register', ['name' => 'Sally'])
+        $this->post('/api/auth/register', ['name' => 'Sally'])
             ->seeJson([
                 'message' => 'Validation Failed',
             ]);

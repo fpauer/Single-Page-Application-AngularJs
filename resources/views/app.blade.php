@@ -28,15 +28,16 @@
 
 </body>
 
-<script src="{{ URL::asset('node_modules/angular/angular.js') }}"></script>
-<script src="{{ URL::asset('node_modules/angular-ui-router/release/angular-ui-router.js') }}"></script>
-<script src="{{ URL::asset('node_modules/angular-animate/angular-animate.js') }}"></script>
-<script src="{{ URL::asset('node_modules/satellizer/satellizer.js') }}"></script>
+<script src="{{ URL::asset('node_modules/angular/angular.min.js') }}"></script>
+<script src="{{ URL::asset('node_modules/angular-ui-router/release/angular-ui-router.min.js') }}"></script>
+<script src="{{ URL::asset('node_modules/angular-animate/angular-animate.min.js') }}"></script>
+<script src="{{ URL::asset('node_modules/satellizer/satellizer.min.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/ui-bootstrap/ui-bootstrap-tpls-1.3.2.js') }}"></script>
 <script src="{{ URL::asset('js/plugins/zingchart/zingchart.min.js') }}" ></script>
 <script src="{{ URL::asset('js/plugins/zingchart/zingchart-angularjs.js') }}" ></script>
-<script src="{{ URL::asset('js/modules/showErrors.js') }}"></script>
 
+<script src="{{ URL::asset('js/modules/showErrors.js') }}"></script>
+<script src="{{ URL::asset('js/modules/logger.js') }}"></script>
 <script src="{{ URL::asset('js/app.js') }}"></script>
 <script src="{{ URL::asset('js/services/modalService.js') }}"></script>
 <script src="{{ URL::asset('js/directives/validNumberDirective.js') }}"></script>

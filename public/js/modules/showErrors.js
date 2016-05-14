@@ -1,3 +1,13 @@
+/**
+ * 
+ * Custom AngularJS directive that provides a
+ * great user experience for form validation errors.
+ *
+ * by Paul Yoder
+ *
+ * hhttp://blog.yodersolutions.com/bootstrap-form-validation-done-right-in-angularjs/
+ * https://github.com/paulyoder/angular-bootstrap-show-errors
+ */
 (function() {
     var showErrorsModule;
 

@@ -49,7 +49,7 @@ class UserControllerTest extends TestCase
         if( !empty($this->header)) {
 
             //checking if the validators are working
-            $response = $this->post('/api/user/', ['name' => 'Sally'], $this->header)
+            $this->post('/api/user/', ['name' => 'Sally'], $this->header)
                 ->seeJson([
                     'message' => 'Validation Failed',
                 ]);
@@ -109,10 +109,8 @@ class UserControllerTest extends TestCase
             $user = json_decode($this->get('/api/user/3', $this->header)->response->getContent(), true);
             if( $user )
             {
-                $user = [
-                    'name' => 'manager update',
-                    'calories_expected' => 4321,
-                ];
+                $user['name'] = 'manager update';
+                $user['calories_expected'] = 4321;
 
                 $this->refreshApplication();
 
@@ -130,8 +128,7 @@ class UserControllerTest extends TestCase
     {
         if( !empty($this->header)) {
             $user = json_decode($this->get('/api/user/4', $this->header)->response->getContent(), true);
-
-            if( sizeof($user) > 0 )
+            if( $user )
             {
                 $this->delete('/api/user/'.$user['id'], [], $this->header)->assertResponseOk();
             }

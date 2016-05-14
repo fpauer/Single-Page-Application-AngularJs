@@ -80,7 +80,7 @@ class TokenAuthController extends Controller
         $user_settings = 
             [
                 'user' => $user,
-                'menus' => UserRepositoryInterface::USER_MENU[$user['role']]
+                'menus' => UserRepositoryInterface::USER_MENU[$user['role']-1]
             ];
         
         return response()->json($user_settings);
@@ -92,30 +92,20 @@ class TokenAuthController extends Controller
      */
     public function register(Request $request){
 
-        //checking if the fields are right
-        $validator = Validator::make(Input::all(), [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'password_confirmation' => 'same:password',
-        ]);
-
-        if ($validator->fails())
-        {
-            return response()->json([
-                'message'   => 'Validation Failed',
-                'errors'        => $validator->errors()
-            ]);
-        }
-
         $newuser = Input::all();
-        $password = Hash::make(Input::get('password'));
-
-        $newuser['password'] = $password;
         $newuser['role'] = UserRepositoryInterface::ROLE_USER;
-        $newuser['calories_expected'] = UserRepositoryInterface::DEFAULT_EXPECTED_CALORIES_PERSON;
         
-        return $this->users->create($newuser);
+        $created = $this->users->create($newuser);
+        if( $created )
+        {
+            return $created;
+        }
+        else {
+            return response()->json([
+                'message' => $this->users->getMessage(),
+                'errors' => $this->users->getErrors()
+            ], 500);
+        }
     }
 
     /**

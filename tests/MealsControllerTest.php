@@ -34,6 +34,21 @@ class MealsControllerTest extends TestCase
         }
     }
 
+
+    /**
+     * Testing the get method
+     *
+     * @return void
+     */
+    public function testIndexByDates()
+    {
+        if( !empty($this->header))
+        {
+            $data = json_decode($this->get('/api/auth/authenticate/user', $this->header)->response->getContent());
+            $this->get('/api/user/'.$data->user->id.'/meals/2016-05-10/2016-05-13/14:00/16:00', $this->header)->assertNotNull([]);
+        }
+    }
+
     /**
      * Testing the post method
      *

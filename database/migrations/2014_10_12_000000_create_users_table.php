@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->integer('role');
             $table->integer('calories_expected');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

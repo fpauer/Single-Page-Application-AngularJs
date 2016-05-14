@@ -8,41 +8,50 @@
                 <h4>{{action}} meal</h4>
                 <form name="addMealForm" novalidate>
                     <input type="hidden" name="id" class="form-control" ng-model="newMeal.id" required />
-                    <div class="form-group" show-errors>
-                        <input type="text" name="description"
-                               class="form-control"
-                               placeholder="Description"
-                               ng-model="newMeal.description"
-                               required />
-                        <p class="help-block" ng-if="addMealForm.description.$error.required">Description is required</p>
-                    </div>
-                    <div class="form-group" show-errors>
-                        <input type="text" name="calories"
-                               class="form-control"
-                               placeholder="Calories"
-                               ng-model="newMeal.calories"
-                               valid-number
-                               required />
-                        <p class="help-block" ng-if="addMealForm.calories.$error.required">Calories is required</p>
-                    </div>
-                    <div class="form-group" show-errors>
-                        <p class="input-group">
-                            <input type="text" name="dateConsumed" id="dateConsumed"
-                                   placeholder="dd-MM-yyyy"
+
+                    <div class="form-group row"  show-errors>
+                        <div class="col-md-12">
+                            <input type="text" name="description"
                                    class="form-control"
-                                   uib-datepicker-popup="{{format}}"
-                                   ng-model="newMeal.consumed_at"
-                                   is-open="popupEdit.opened"
-                                   datepicker-options="dateOptions"
-                                   ng-required="true"
-                                   close-text="Close" />
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="openEdit()"><i class="glyphicon glyphicon-calendar"></i></button>
-                            </span>
-                            <select ng-model="hour" ng-options="n for n in [] | range:0:24"></select>
-                            <select ng-model="minute" ng-options="n for n in [] | range:0:61"></select>
-                        </p>
-                        <p class="help-block" ng-if="addMealForm.dateConsumed.$error.required">Consumed at is required</p>
+                                   placeholder="Description"
+                                   ng-model="newMeal.description"
+                                   required />
+                            <p class="help-block" ng-if="addMealForm.description.$error.required && addMealForm.description.$dirty">Description is required</p>
+                        </div>
+                    </div>
+                    <div class="form-group row" show-errors>
+                        <div class="col-md-4">
+                            <input type="text" name="calories"
+                                   class="form-control"
+                                   placeholder="Calories"
+                                   ng-model="newMeal.calories"
+                                   valid-number
+                                   required />
+                            <p class="help-block" ng-if="addMealForm.calories.$error.required">Calories is required</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="input-group">
+                                <input type="text" name="dateConsumed" id="dateConsumed"
+                                       placeholder="dd-MM-yyyy"
+                                       class="form-control"
+                                       uib-datepicker-popup="{{format}}"
+                                       ng-model="newMeal.consumed_at"
+                                       is-open="popupEdit.opened"
+                                       datepicker-options="dateOptions"
+                                       ng-required="true"
+                                       close-text="Close" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="openEdit()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                            <p class="help-block" ng-if="addMealForm.dateConsumed.$error.required">Consumed at is required</p>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" ng-model="hour" ng-options="n as n|formatter for n in [] | range:0:24"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-control" ng-model="minute" ng-options="n as n|formatter for n in [] | range:0:60"></select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <td><button class="btn btn-info btn-xs" ng-click="save()">  <span class="glyphicon glyphicon-ok" ></span> Save</button></td>
@@ -76,12 +85,12 @@
                         <input type="text" name="dateFrom"  id="dateFrom"
                                class="form-control"
                                uib-datepicker-popup="{{format}}"
-                               ng-model="dateFrom" is-open="popup1.opened"
-                               datepicker-options="dateOptions"
+                               ng-model="dateFrom" is-open="popupDateFrom.opened"
+                               datepicker-options="dateFromOptions"
                                ng-required="true"
                                close-text="Close" />
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            <button type="button" class="btn btn-default" ng-click="openDateFrom()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
                     </p>
                 </div>
@@ -95,12 +104,12 @@
                                class="form-control"
                                uib-datepicker-popup="{{format}}"
                                ng-model="dateTo"
-                               is-open="popup2.opened"
-                               datepicker-options="dateOptions"
+                               is-open="popupDateTo.opened"
+                               datepicker-options="dateToOptions"
                                ng-required="true"
                                close-text="Close" />
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            <button type="button" class="btn btn-default" ng-click="openDateTo()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
                     </p>
                 </div>
@@ -108,11 +117,11 @@
             <div class="col-md-4">
                 <div class="form-group" >
                     <label for="hourFrom">Time</label>
-                    <select ng-model="hourFrom" id="hourFrom" ng-options="n for n in [] | range:0:24"></select>
-                    <select ng-model="minuteFrom" id="minuteFrom" ng-options="n for n in [] | range:0:61"></select>
+                    <select class="form-control" ng-model="hourFrom" id="hourFrom" ng-options="n as n|formatter for n in [] | range:0:24"></select>
+                    <select class="form-control" ng-model="minuteFrom" id="minuteFrom" ng-options="n as n|formatter for n in [] | range:0:60"></select>
                     <label for="hourTo"> and </label>
-                    <select ng-model="hourTo" id="hourTo" ng-options="n for n in [] | range:0:24"></select>
-                    <select ng-model="minuteTo" id="minuteTo" ng-options="n for n in [] | range:0:61"></select>
+                    <select class="form-control" ng-model="hourTo" id="hourTo" ng-options="n as n|formatter for n in [] | range:0:24"></select>
+                    <select class="form-control" ng-model="minuteTo" id="minuteTo" ng-options="n as n|formatter for n in [] | range:0:60"></select>
                 </div>
             </div>
 
@@ -129,7 +138,7 @@
             <tr ng-repeat='meal in meals'>
                 <td>{{meal.description }}</td>
                 <td>{{meal.calories }}</td>
-                <td>{{meal.consumed_at | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>{{meal.consumed_at | date:formatFull }}</td>
                 <td><button class="btn btn-primary btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
                 <td><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
             </tr>

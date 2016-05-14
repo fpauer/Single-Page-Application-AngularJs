@@ -32,21 +32,21 @@ Route::group(['prefix' => 'api'], function () {
 
     //Middleware/Filter to check user permissions
     Route::group(['middleware' => 'acl'], function () {
-
+        
         //routing method to change the expected calories
         Route::group(array('prefix' => 'user/{user_id}'), function () {
 
             Route::put('/calories', 'TokenAuthController@updateCalories');
 
             //routing all methos for Meals
+            Route::get('/meals/{date_from}/{time_from}/{date_to}/{time_to}/', 'MealsController@indexByDates');//list all by user
             Route::get('/meals', 'MealsController@index');//list all by user
             Route::post('/meals', 'MealsController@store');//add a new by user
             Route::get('/meals/{meal_id}', 'MealsController@show');//get info from one
             Route::put('/meals/{meal_id}', 'MealsController@update');//update one
             Route::delete('/meals/{meal_id}', 'MealsController@destroy');//delete one
         });
-
-
+        
         //routing all methos for Users
         Route::get('/user', 'UserController@index');//list all
         Route::post('/user', 'UserController@store');//add a new

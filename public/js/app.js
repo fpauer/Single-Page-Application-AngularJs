@@ -1,5 +1,13 @@
 /**
- * Created by fpauer on 5/8/16.
+ * Created by Fernando on 5/8/16.
+ *
+ * Meals application 
+ * 
+ * @param $stateProvider
+ * @param $urlRouterProvider
+ * @param $authProvider
+ * @param $provide
+ * @param LoggerProvider
  */
 
     angular
@@ -8,12 +16,15 @@
                             , 'ui.bootstrap'
                             , 'ui.bootstrap.showErrors'
                             , 'ngAnimate'
-                            , 'zingchart-angularjs'])
-        .config( moduleConfig );
+                            , 'zingchart-angularjs'
+                            , 'app.logger'])
+        .config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$provide', 'LoggerProvider', moduleConfig ]);
 
+    function moduleConfig( $stateProvider, $urlRouterProvider, $authProvider, $provide, LoggerProvider) {
 
-    function moduleConfig( $stateProvider, $urlRouterProvider, $authProvider, $provide) {
-
+        //Production = false
+        LoggerProvider.enabled(true);
+        
         $authProvider.loginUrl = '/api/auth/authenticate';
 
         $urlRouterProvider.otherwise('/meal');
@@ -48,24 +59,34 @@
 
     }
 
+/**
+ * Running the application
+ */
     angular
         .module('app.meals')
         .run(function($http, $auth, $state, $rootScope, $location) {
 
             $rootScope.checkAuthentication = function() {
+                
+                //if not authenticated return to login
                 if ($auth.isAuthenticated()) {
-                    $http.get('api/auth/authenticate/user')
-                        .then(function (response) {
-                            if (response !== undefined) {
-                                $rootScope.currentUser = response.data.user;
-                                $rootScope.numberOfCalories = parseInt(response.data.user.calories_expected);
-                                $rootScope.menus = response.data.menus;
-                            }
-                        })
-                        .catch(function (error) {
-                            $rootScope.currentUser = null;
-                            $location.url('/login');
-                        });
+
+                    //refreshing user data
+                    function complete(response, status, headers, config) {
+                        if (response !== undefined) {
+                            $rootScope.currentUser = response.data.user;
+                            $rootScope.numberOfCalories = parseInt(response.data.user.calories_expected);
+                            $rootScope.menus = response.data.menus;
+                        }
+                    }
+                    function failed(e) {
+                        if (e.data && e.data.description) {
+                            logger.error('XHR Failed for {0} : {1}', ['refreshing user data', e.data.description]);
+                        }
+                        $rootScope.currentUser = null;
+                        $location.url('/login');
+                    }
+                    $http.get('api/auth/authenticate/user').then(complete).catch(failed);
                 }
                 else
                 {
@@ -91,6 +112,9 @@
             };
         });
 
+/**
+ * Filter to create range values
+ */
 angular
     .module('app.meals')
     .filter('range', function() {

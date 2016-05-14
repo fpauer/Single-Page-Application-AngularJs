@@ -52,4 +52,13 @@ interface MealsRepositoryInterface
      */
     public function getListMealsByUserId($user);
 
+
+    /**
+     * Get a list of the  meals by user, dates and time
+     *
+     * @param $user
+     * @return array
+     */
+    public function getListMealsByUserDates($user, $date_from, $date_to, $time_from, $time_to);
+
 }
