@@ -80,7 +80,7 @@ class MealsRepository implements MealsRepositoryInterface
      */
     public function getListMealsByUserId($user_id)
     {
-        return Meals::where('user_id', '=', $user_id)->orderBy('consumed_at', 'DESC')->get();
+        return Meals::where('user_id', '=', $user_id)->orderBy('consumed_at', 'desc')->get();
     }
 
 
@@ -97,6 +97,7 @@ class MealsRepository implements MealsRepositoryInterface
             ->whereBetween('consumed_at',array($date_from.' 00:00:00',$date_to.' 23:59:59'))
             ->whereRaw('CAST(consumed_at AS time) >= CAST(\''.$time_from.':00\' AS time)')
             ->whereRaw('CAST(consumed_at AS time) <= CAST(\''.$time_to.':00\' AS time)')
+            ->orderBy('consumed_at', 'desc')
             ->get();
     }
 }

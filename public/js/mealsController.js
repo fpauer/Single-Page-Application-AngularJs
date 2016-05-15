@@ -48,12 +48,12 @@
         $scope.hourTo = 23;
         $scope.minuteTo = 59;
         $scope.caloriesConsumedToday = 0;
-        $scope.userSelected = $rootScope.currentUser.id;
+        if( $rootScope.currentUser!= null) $scope.userSelected = $rootScope.currentUser.id;
 
         //list of users
         $scope.users = [];
         $scope.loadUsers = function () {
-            $http.get($scope.apiPath+$rootScope.currentUser.id+'/users').then(complete).catch(failed);
+            if( $rootScope.currentUser!= null) $http.get($scope.apiPath+$rootScope.currentUser.id+'/users').then(complete).catch(failed);
 
             function complete(response, status, headers, config) {
                 $scope.users = response.data;
@@ -134,11 +134,12 @@
 
                 if( $scope.newMeal.id == 0 )
                 {
+                    $scope.userSelected = $rootScope.currentUser.id;
                     $http.post($scope.apiPath+$scope.userSelected+'/meals', $scope.newMeal).then(complete).catch(failed);//create
                 }
                 else
                 {
-                    $http.put($scope.apiPath+$scope.userSelected+'/meals/' + $scope.newMeal.id, $scope.newMeal).then(complete).catch(failed);//update
+                    $http.put($scope.apiPath+$scope.newMeal.user_id+'/meals/' + $scope.newMeal.id, $scope.newMeal).then(complete).catch(failed);//update
                 }
             }
 
@@ -286,7 +287,7 @@
         $scope.updateChart = function()
         {
             //getting from REST API the calories consumed for today
-            var urlToday = $scope.apiPath+$scope.userSelected+'/meals';
+            var urlToday = $scope.apiPath+$scope.currentUser.id+'/meals';
             urlToday   += '/'+$filter('date')(new Date(),$scope.apiDataFormat);
             urlToday   += '/'+$filter('date')(new Date(), $scope.apiDataFormat)+'/00:00/23:59';
 
@@ -300,7 +301,7 @@
                     $scope.caloriesConsumedToday += parseInt(todayMeals[i].calories);
                 }
 
-                $scope.chartData.series[0].values = [$scope.caloriesConsumedToday];//updating today calories consumed
+                //$scope.chartData.series[0].values = [$scope.caloriesConsumedToday];//updating today calories consumed
                 var remained = parseInt($rootScope.numberOfCalories)-$scope.caloriesConsumedToday;//calculating today available calories
 
                 //Changing the color based on the calories available for today
@@ -348,11 +349,21 @@
             $scope.search();//if any fields changes, search again
         }
 
+        //checking permissions
+        $scope.canEdit = function()
+        {
+            if($scope.currentUser!=null && $scope.userSelected==$scope.currentUser.id) return true;
+            else return ($scope.currentUser!=null && $scope.userSelected!=$scope.currentUser.id && $scope.currentUser.role>2);
+        }
+        
         //initialiazing the controller
         $scope.init = function () {
-            $scope.search();
-            $scope.clean();
-            $scope.updateChart();
+            if( $rootScope.currentUser!= null)
+            {
+                $scope.search();
+                $scope.clean();
+                $scope.updateChart();
+            }
         };
         $scope.init();
     };

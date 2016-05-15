@@ -67,8 +67,10 @@
         .run(function($http, $auth, $state, $rootScope, $location) {
 
             $rootScope.checkAuthentication = function() {
-                
-                //if not authenticated return to login
+
+                /**
+                 * If not authenticated return to login
+                 */
                 if ($auth.isAuthenticated()) {
 
                     //refreshing user data
@@ -96,14 +98,23 @@
             };
             $rootScope.checkAuthentication();
 
+            /**
+             * When the state changes check the authentication
+             */
             $rootScope.$on('$stateChangeStart', function (event) {
                 $rootScope.checkAuthentication();
             });
 
+            /**
+             * When the route changes check the authentication
+             */
             $rootScope.$on('$routeChangeStart', function (event) {
                 $rootScope.checkAuthentication();
             });
 
+            /**
+             * Global function to logout
+             */
             $rootScope.logout = function() {
                 $auth.logout().then(function() {
                     $rootScope.currentUser = null;

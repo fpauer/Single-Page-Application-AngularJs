@@ -30,7 +30,8 @@ class CheckPermissions
             }, UserRepository::getUserPermissions($user['role'])));
 
             //checking permissions in the controller
-            if (strpos($permissions, $controller[0]) !== false) {
+            if (strpos($permissions, $controller[0]) !== false) 
+            {
 
                 //checking permissions in the resource
                 if( UserRepository::$MEAL_PERMISSION['controller']==$controller[0] )
@@ -45,7 +46,9 @@ class CheckPermissions
                     }
                 }
                 
-            } else {// Unauthorized access to the controller
+            }
+            else // Unauthorized access to the controller 
+            {
                 return response()->json([
                     'message'   => 'Unauthorized access',
                     'errors'        => ['user' => ["You do not have access to this resource."]]

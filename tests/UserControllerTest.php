@@ -59,7 +59,7 @@ class UserControllerTest extends TestCase
             //checking if the validators are working
             $newuser = [
                 'name' => 'manager',
-                'email' => 'manager@test.com',
+                'email' => 'manager@manager.com',
                 'password' => 'm@nager1',
             ];
 
@@ -161,7 +161,6 @@ class UserControllerTest extends TestCase
                     ->seeJson([
                         'user_id' => $data->user->id
                     ]);
-
             }
         }
     }
