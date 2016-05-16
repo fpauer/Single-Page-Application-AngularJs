@@ -77,7 +77,7 @@ class UserControllerTest extends TestCase
                 $newuser['calories_expected'] = \App\Repositories\UserRepository::DEFAULT_EXPECTED_CALORIES_PERSON;
                 $this->post('/api/user', $newuser, $this->header)
                     ->seeJson([
-                        "email" => "manager@test.com",
+                        "email" => "manager@manager.com",
                     ]);
             }
 

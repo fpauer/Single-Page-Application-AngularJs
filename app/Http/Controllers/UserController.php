@@ -104,7 +104,7 @@ class UserController extends Controller
         }else{
             return response()->json([
                 'message'   => 'Resource Not found',
-                'errors'        => ['user' => ["The user id passed didnt exist."]]
+                'errors'        => ['user' => ["The user id passed did not exist."]]
             ], 404);
         }
     }

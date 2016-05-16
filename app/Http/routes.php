@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('app');
 });
 
+Route::get('/test', function () {
+    return view('test');
+});
+
 /**
  * Routing all request to the REST API
  */

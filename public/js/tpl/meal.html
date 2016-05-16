@@ -63,7 +63,11 @@
             <div class="col-sm-2">&nbsp;</div>
             <div class="col-sm-4">
                 <h4 class="text-center">Calories consumed today</h4>
-                <div zingchart id="pieChart" zc-json="chartData" zc-width="100%" zc-height="200px" ></div>
+                <div class="text-center">
+                    <div class="chart">
+                        <pie-chart data="chartData" options="chartOptions"></pie-chart>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="alert alert-success" ng-show="showSuccessAlert">
@@ -125,7 +129,7 @@
                 </div>
             </div>
             <div class="col-md-12" ng-show="users.length>1">
-                <label for="userSelected">Users</label>
+                <label for="userSelected">User</label>
                 <div class="form-group">
                     <select name="userSelected" id="userSelected"
                             ng-model="userSelected"
@@ -149,8 +153,8 @@
                 <td>{{meal.description }}</td>
                 <td>{{meal.calories }}</td>
                 <td>{{meal.consumed_at | date:formatFull }}</td>
-                <td><button class="btn btn-primary btn-xs" ng-click="edit($index)" ng-show="canEdit()">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
-                <td><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)" ng-show="canEdit()">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
+                <td ng-show="canEdit()" ><button class="btn btn-primary btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
+                <td ng-show="canEdit()" ><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
             </tr>
         </table>
     </div>

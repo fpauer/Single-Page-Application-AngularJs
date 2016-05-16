@@ -57,14 +57,14 @@
                 <th> Name </th>
                 <th> Email </th>
                 <th> Role </th>
-                <th> &nbsp; </th>
-                <th> &nbsp; </th>
+                <th ng-show="user.id!=currentUser.id"> &nbsp; </th>
+                <th ng-show="user.id!=currentUser.id"> &nbsp; </th>
             </tr>
             <tr ng-repeat='user in users'>
                 <td>{{user.name }}</td>
                 <td>{{user.email }}</td>
                 <td>{{availableRoles[user.role-1].name}}</td>
-                <td><button class="btn btn-primary btn-xs" ng-click="edit($index)">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
+                <td><button class="btn btn-primary btn-xs" ng-click="edit($index)" ng-show="user.id!=currentUser.id">  <span class="glyphicon glyphicon-edit" ></span> edit</button></td>
                 <td><button class="btn btn-danger btn-xs" ng-click="confirmDelete($index)" ng-show="user.id!=currentUser.id">  <span class="glyphicon glyphicon-trash" ></span> delete</button></td>
             </tr>
         </table>

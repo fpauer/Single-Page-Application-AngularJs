@@ -82,25 +82,26 @@ function UsersController($http, $scope, $timeout, modalService, Logger) {
 
         function complete(response, status, headers, config) {
 
-            if (response.data.errors === undefined) {
+            if (response.data.errors===undefined || response.data.errors.length==0) {
                 $scope.successTextAlert = "Saved successfully!";
                 $scope.showSuccess(true);
                 $scope.init();
-            } else {
-                $scope.errors = [];
-                if(response.data.errors.password !== undefined)
-                    $scope.errors = $scope.errors.concat(response.data.errors.password);
-                if(response.data.errors.password_confirmation !== undefined)
-                    $scope.errors = $scope.errors.concat(response.data.errors.password_confirmation);
-                if(response.data.errors.email !== undefined)
-                    $scope.errors = $scope.errors.concat(response.data.errors.email);
-                
-                $scope.showError(true);
             }
         }
         
         function failed(e) {
-            if (e.data && e.data.description) {
+            if (e.data.errors!==undefined) {
+                $scope.errors = [];
+                if(e.data.errors.password !== undefined)
+                    e.errors = $scope.errors.concat(e.data.errors.password);
+                if(e.data.errors.password_confirmation !== undefined)
+                    $scope.errors = $scope.errors.concat(e.data.errors.password_confirmation);
+                if(e.data.errors.email !== undefined)
+                    $scope.errors = $scope.errors.concat(e.data.errors.email);
+
+                $scope.showError(true);
+            }
+            else if (e.data && e.data.description) {
                 logger.error('XHR Failed for {0} : {1}', ['save Users', e.data.description]);
             }
         }

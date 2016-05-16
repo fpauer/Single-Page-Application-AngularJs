@@ -129,8 +129,18 @@
             $scope.$broadcast('show-errors-check-validity');
             if( $scope.addMealForm.$valid )
             {
-                $scope.newMeal.consumed_at.setUTCHours( parseInt($scope.hour) );
-                $scope.newMeal.consumed_at.setMinutes( parseInt($scope.minute) );
+                var newDate = $scope.newMeal.consumed_at;
+                //fixing problems with timezone
+                var year = newDate.getUTCFullYear();
+                var month = newDate.getUTCMonth();
+                var day = newDate.getUTCDate();
+                if( newDate.getDate()!=day) day = newDate.getDate();
+                newDate.setUTCHours( parseInt($scope.hour) );
+                newDate.setMinutes( parseInt($scope.minute) );
+                newDate.setUTCFullYear( year );
+                newDate.setUTCMonth( month );
+                newDate.setUTCDate( day );
+                $scope.newMeal.consumed_at = newDate;
 
                 if( $scope.newMeal.id == 0 )
                 {
@@ -248,41 +258,12 @@
         //Chart Element ----------------------------------------------------------------------------------------------
         $scope.initChart = function()
         {
-            $scope.chartData = {
-                globals: {
-                    shadow: false,
-                    fontFamily: "Verdana",
-                    fontWeight: "100"
-                },
-                type: "pie",
-                backgroundColor: "#f5f5f5",
-
-                tooltip: {
-                    text: "%v %t"
-                },
-                plot: {
-                    refAngle: "-90",
-                    borderWidth: "0px",
-                    valueBox: {
-                        placement: "in",
-                        text: "%v ",
-                        fontSize: "15px",
-                        textAlpha: 1,
-                    }
-                },
-                series: [{
-                    text: "Consumed",
-                    values: [0],
-                    backgroundColor: "#FA6E6E #FA9494",
-                }, {
-                    text: "Available",
-                    values: [ 0 ],
-                    backgroundColor: "#93b874",
-                }]
-            };
-
+            $scope.chartOptions = {thickness: 10};
+            $scope.chartData = [
+                {label: "Consumed", value: 0, color: "#FA6E6E"},
+                {label: "Available", value: 0, color: "#93b874"}
+            ];
         };
-        $scope.initChart();
 
         $scope.updateChart = function()
         {
@@ -301,19 +282,24 @@
                     $scope.caloriesConsumedToday += parseInt(todayMeals[i].calories);
                 }
 
-                //$scope.chartData.series[0].values = [$scope.caloriesConsumedToday];//updating today calories consumed
+                $scope.chartData[0].label = $scope.caloriesConsumedToday + ' Consumed';//updating today calories consumed
+                $scope.chartData[0].value = $scope.caloriesConsumedToday;//updating today calories consumed
                 var remained = parseInt($rootScope.numberOfCalories)-$scope.caloriesConsumedToday;//calculating today available calories
 
                 //Changing the color based on the calories available for today
                 if( remained<0 )
                 {
-                    $scope.chartData.series[0].backgroundColor = "#FA6E6E #FA9494";
-                    $scope.chartData.series[1].values = [0];
+                    $scope.chartData = [
+                        {label: $scope.caloriesConsumedToday + " Consumed", value: parseInt($scope.caloriesConsumedToday), color: "#FA6E6E"},
+                        {label: "Enough for Today!", value: 0, color: "#93b874"}
+                    ];
                 }
                 else
                 {
-                    $scope.chartData.series[0].backgroundColor = "#D2D6DE";
-                    $scope.chartData.series[1].values = [remained];
+                    $scope.chartData = [
+                        {label: $scope.caloriesConsumedToday + " Consumed", value: parseInt($scope.caloriesConsumedToday), color: "#FA6E6E"},
+                        {label: remained + " Available", value: remained, color: "#93b874"}
+                    ];
                 }
             }
 
@@ -362,6 +348,8 @@
             {
                 $scope.search();
                 $scope.clean();
+                $scope.initChart();
+                $scope.updateChart();
                 $scope.updateChart();
             }
         };

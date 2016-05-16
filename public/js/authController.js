@@ -89,21 +89,22 @@
     
             function registerComplete(response, status, headers, config) {//SUCCESS
 
-                if (response.data.errors === undefined) {//if no errors found, log in
+                if (response.data.errors===undefined || response.data.errors.length==0) {//if no errors found, log in
                     $scope.email = $scope.newUser.email;
                     $scope.password = $scope.newUser.password;
                     $scope.login();
-                } else {
-                    $scope.registerError = true;
-                    if(response.data.errors.password !== undefined)
-                        $scope.registerErrors = response.data.errors.password;
-                    if(response.data.errors.email !== undefined)
-                        $scope.registerErrors = response.data.errors.email;
                 }
             }
     
             function registerFailed(e) { //ERROR
-                if (e.data && e.data.description) {
+                if (e.data.errors!==undefined) {
+                    $scope.registerError = true;
+                    if(e.data.errors.password !== undefined)
+                        $scope.registerErrors = e.data.errors.password;
+                    if(e.data.errors.email !== undefined)
+                        $scope.registerErrors = e.data.errors.email;
+                }
+                else if (e.data && e.data.description) {
                     logger.error('XHR Failed for {0} : {1}', ['register', e.data.description]);
                 }
             }

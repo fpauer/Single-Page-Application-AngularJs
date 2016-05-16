@@ -16,7 +16,7 @@
                             , 'ui.bootstrap'
                             , 'ui.bootstrap.showErrors'
                             , 'ngAnimate'
-                            , 'zingchart-angularjs'
+                            , 'n3-pie-chart'
                             , 'app.logger'])
         .config(['$stateProvider', '$urlRouterProvider', '$authProvider', '$provide', 'LoggerProvider', moduleConfig ]);
 

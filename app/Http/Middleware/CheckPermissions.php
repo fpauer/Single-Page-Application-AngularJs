@@ -37,7 +37,7 @@ class CheckPermissions
                 if( UserRepository::$MEAL_PERMISSION['controller']==$controller[0] )
                 {
                     //if not admin and not accessing its own resources, Unauthorized!
-                    if( UserRepository::ROLE_ADMIN != $user['role'] && $request->user_id != $user['id'] )
+                    if( UserRepository::ROLE_ADMIN != $user['role'] && $request->user_id != $user['id'] && $controller[1] != 'indexByDates' )
                     {
                         return response()->json([
                             'message'   => 'Unauthorized resource',
