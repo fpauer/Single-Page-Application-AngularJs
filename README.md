@@ -1,6 +1,3 @@
-#Important Information:
-- In any case you should be able to explain how a REST API works and demonstrate that by creating functional tests that use the REST Layer directly.
-
 #Pre-requisites:
 - PHP >= version 5.x
 - LARAVEL version 5.x
@@ -11,7 +8,7 @@
 
 1 - Clone the project
 
-	git clone git@git.toptal.com:Fernand-Dias/fernand-dias.git
+	git clone username@github.com/fpauer/Single-Page-Application-AngularJs.git
 
 2 - Create the Database
 
